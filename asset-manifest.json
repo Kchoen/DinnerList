@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/dinner-list/static/css/main.2cb91ac0.css",
+    "main.js": "/dinner-list/static/js/main.ad05edc6.js",
+    "static/js/787.df831e62.chunk.js": "/dinner-list/static/js/787.df831e62.chunk.js",
+    "service-worker.js": "/dinner-list/service-worker.js",
+    "index.html": "/dinner-list/index.html",
+    "main.2cb91ac0.css.map": "/dinner-list/static/css/main.2cb91ac0.css.map",
+    "main.ad05edc6.js.map": "/dinner-list/static/js/main.ad05edc6.js.map",
+    "787.df831e62.chunk.js.map": "/dinner-list/static/js/787.df831e62.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.2cb91ac0.css",
+    "static/js/main.ad05edc6.js"
+  ]
+}

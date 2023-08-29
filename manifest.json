@@ -1,0 +1,16 @@
+{
+	"short_name": "口袋名冊",
+	"name": "口袋餐廳名冊",
+	"icons": [
+		{
+			"src": "food-app.png",
+			"sizes": "512x512",
+			"type": "image/png",
+			"purpose": "any"
+		}
+	],
+	"start_url": ".",
+	"display": "standalone",
+	"theme_color": "#000000",
+	"background_color": "#ffffff"
+}
