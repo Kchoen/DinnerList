@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/dinner-list/static/css/main.2cb91ac0.css",
-    "main.js": "/dinner-list/static/js/main.ad05edc6.js",
-    "static/js/787.df831e62.chunk.js": "/dinner-list/static/js/787.df831e62.chunk.js",
-    "service-worker.js": "/dinner-list/service-worker.js",
-    "index.html": "/dinner-list/index.html",
-    "main.2cb91ac0.css.map": "/dinner-list/static/css/main.2cb91ac0.css.map",
-    "main.ad05edc6.js.map": "/dinner-list/static/js/main.ad05edc6.js.map",
-    "787.df831e62.chunk.js.map": "/dinner-list/static/js/787.df831e62.chunk.js.map"
+    "main.css": "/DinnerList/static/css/main.2cb91ac0.css",
+    "main.js": "/DinnerList/static/js/main.91111712.js",
+    "static/js/787.c2c3998c.chunk.js": "/DinnerList/static/js/787.c2c3998c.chunk.js",
+    "service-worker.js": "/DinnerList/service-worker.js",
+    "index.html": "/DinnerList/index.html",
+    "main.2cb91ac0.css.map": "/DinnerList/static/css/main.2cb91ac0.css.map",
+    "main.91111712.js.map": "/DinnerList/static/js/main.91111712.js.map",
+    "787.c2c3998c.chunk.js.map": "/DinnerList/static/js/787.c2c3998c.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.2cb91ac0.css",
-    "static/js/main.ad05edc6.js"
+    "static/js/main.91111712.js"
   ]
 }
