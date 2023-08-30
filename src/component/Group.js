@@ -125,75 +125,59 @@ export default function RestaurantPicker() {
 
 			{folders.map((folder) => (
 				<div key={folder.name}>
-					<div className="row">
-						<div
-							className="col-md-6"
-							onClick={() => toggleFolder(folder)}
+					<h2 onClick={() => toggleFolder(folder)}>
+						{folder.open ? "📁" : "📂"} {folder.name + " "}
+						<Button
+							style={{
+								float: "right",
+								width: "50px",
+								height: "40px",
+							}}
+							onClick={() => renameFolder(folder)}
 						>
-							<h2>
-								{folder.open ? "📁" : "📂"} {folder.name + " "}
-							</h2>
-						</div>
-						<div className="col col-lg-2">
-							<Button
-								style={{
-									float: "right",
-									width: "50px",
-									height: "40px",
-								}}
-								onClick={() => renameFolder(folder)}
-							>
-								✏️
-							</Button>
-							<Button
-								className="col-ml-6-float-right"
-								style={{
-									float: "right",
-									width: "50px",
-									height: "40px",
-								}}
-								onClick={() => addRestaurant(folder)}
-							>
-								<svg className="plus-icon" viewBox="0 0 16 16">
-									<path d="M8 0a1 1 0 0 1 1 1v6h6a1 1 0 1 1 0 2H9v6a1 1 0 1 1-2 0V9H1a1 1 0 1 1 0-2h6V1a1 1 0 0 1 1-1z" />
-								</svg>
-							</Button>
-						</div>
-					</div>
-					<div className="row">
-						<div className="col-ml-8">
-							{folder.open || (
-								<ListGroup>
-									{folder.restaurants.map((r) => (
-										<ListGroupItem
-											style={{
-												display: "flex",
-												alignItems: "center",
-												justifyContent: "center",
-											}}
-										>
-											{r + "  "}
-											<Button
-												style={{
-													marginLeft: "auto",
-													float: "right",
-												}}
-												onClick={() =>
-													handleDeleteRestaurant(
-														folder,
-														r
-													)
-												}
-												variant="danger"
-											>
-												刪除
-											</Button>
-										</ListGroupItem>
-									))}
-								</ListGroup>
-							)}
-						</div>
-					</div>
+							✏️
+						</Button>
+						<Button
+							className="col-ml-6-float-right"
+							style={{
+								float: "right",
+								width: "50px",
+								height: "40px",
+							}}
+							onClick={() => addRestaurant(folder)}
+						>
+							<svg className="plus-icon" viewBox="0 0 16 16">
+								<path d="M8 0a1 1 0 0 1 1 1v6h6a1 1 0 1 1 0 2H9v6a1 1 0 1 1-2 0V9H1a1 1 0 1 1 0-2h6V1a1 1 0 0 1 1-1z" />
+							</svg>
+						</Button>
+					</h2>
+					{folder.open || (
+						<ListGroup>
+							{folder.restaurants.map((r) => (
+								<ListGroupItem
+									style={{
+										display: "flex",
+										alignItems: "center",
+										justifyContent: "center",
+									}}
+								>
+									{r + "  "}
+									<Button
+										style={{
+											marginLeft: "auto",
+											float: "right",
+										}}
+										onClick={() =>
+											handleDeleteRestaurant(folder, r)
+										}
+										variant="danger"
+									>
+										刪除
+									</Button>
+								</ListGroupItem>
+							))}
+						</ListGroup>
+					)}
 				</div>
 			))}
 		</div>
