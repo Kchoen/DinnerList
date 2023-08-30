@@ -154,14 +154,17 @@ export default function RestaurantPicker() {
 				});
 				console.log(selected);
 				const random = Math.floor(Math.random() * selected.length);
-
+				let urls = [
+					"https://media.giphy.com/media/sIIhZliB2McAo/giphy.gif",
+					"https://media.giphy.com/media/GkD4U3VfiIbzcBhQNu/giphy.gif",
+				];
 				Swal.fire({
 					title: "抽中的是： " + selected[random],
 					color: "#716add",
 					background: "#fff url(/images/trees.png)",
 					backdrop: `
                       rgba(0,0,123,0.4)
-                      url("https://media.giphy.com/media/sIIhZliB2McAo/giphy.gif")
+                      url("${urls[Math.floor(Math.random() * 2)]}")
                       left top
                       no-repeat
                     `,
