@@ -36,11 +36,11 @@
 		transform: rotate(360deg);
 	}
 }
-h2 {
+.mt-2 {
 	transition: transform 0.1s, background-color 0.1s;
 }
 
-h2:hover {
+.mt-2:hover {
 	transform: translateX(10px); /* move text forward */
 	background-color: rgba(0, 0, 0, 0.2); /* darken background */
 }

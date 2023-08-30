@@ -1,6 +1,9 @@
-import { useState } from "react";
 import { Button, Form, ListGroup, ListGroupItem } from "react-bootstrap";
 import Swal from "sweetalert2";
+import React, { useState, useCallback, useRef, useEffect } from "react";
+import Modal from "react-modal";
+import { result } from "lodash";
+
 export default function RestaurantPicker() {
 	const [folders, setFolders] = useState([
 		{
@@ -9,8 +12,26 @@ export default function RestaurantPicker() {
 			open: true,
 		},
 	]);
-
+	const sourceTypeItems = [{ id: "速食", name: "速食" }];
 	const [selectedRestaurant, setSelectedRestaurant] = useState("");
+	var checkedFolders = [];
+	Modal.setAppElement("#root");
+	const [modalIsOpen, setModalIsOpen] = useState(false);
+	const [selectedItems, setSelectedItems] = useState({});
+	const firstInputRef = useRef();
+
+	const toggleModalOpenState = () => {
+		setModalIsOpen((state) => !state);
+	};
+
+	const handleOnChange = (e) => {
+		const { name, checked } = e.target;
+
+		setSelectedItems((items) => ({
+			...items,
+			[name]: checked,
+		}));
+	};
 	// Note
 	// Folder handlers
 	const addFolder = () => {
@@ -115,16 +136,68 @@ export default function RestaurantPicker() {
 			)
 		);
 	};
+	const pickRestaurants = () => {
+		let boxHtml = "";
+		folders.forEach((folder) => {
+			boxHtml += `<div  class="form-check">
+            <input style="margin: 5px" class="form-check-input" type="checkbox" checked="true" value="" id=${folder.name}>
+            <label style="margin: 5px"  class="form-check-label" for="checkbox1">
+                ${folder.name}
+            </label>
+        </div>
+        `;
+		});
+		Swal.fire({
+			html: boxHtml,
+			focusConfirm: false,
+			showCancelButton: true,
+			cancelButtonText: "取消",
+			confirmButtonText: "隨機抽取",
+			preConfirm: () => {
+				let selected = [];
+				folders.forEach((folder) => {
+					console.log(document.getElementById(folder.name).checked);
+					if (document.getElementById(folder.name).checked) {
+						selected = selected.concat(folder.restaurants);
+					}
+				});
+				console.log(selected);
+				const random = Math.floor(Math.random() * selected.length);
+
+				Swal.fire({
+					title: "抽中的是： " + selected[random],
+					color: "#716add",
+					background: "#fff url(/images/trees.png)",
+					backdrop: `
+                      rgba(0,0,123,0.4)
+                      url("https://media.giphy.com/media/sIIhZliB2McAo/giphy.gif")
+                      left top
+                      no-repeat
+                    `,
+				});
+			},
+		}).then((result) => {
+			console.log(result);
+		});
+	};
 	// Restaurant handlers
 
 	//...other handlers
 
 	return (
 		<div className="container">
-			<Button margin="12px" onClick={addFolder}>
-				Add Folder
+			<h1>口袋餐廳名冊</h1>
+			<Button margin="12px" onClick={addFolder} variant="success">
+				新增資料夾
 			</Button>
-
+			<Button
+				margin="12px"
+				style={{ float: "right" }}
+				variant="info"
+				onClick={pickRestaurants}
+			>
+				隨機挑選餐廳
+			</Button>
 			{folders.map((folder) => (
 				<div key={folder.name}>
 					<h2 className="mt-2" onClick={() => toggleFolder(folder)}>
@@ -239,6 +312,71 @@ export default function RestaurantPicker() {
 					)}
 				</div>
 			))}
+			<Modal
+				isOpen={modalIsOpen}
+				onRequestClose={toggleModalOpenState}
+				className="source-type-modal"
+				aria-labelledby="source-type-dialog-label"
+				onAfterOpen={() => {
+					setTimeout(() => firstInputRef.current?.focus(), 0);
+				}}
+			>
+				<ul
+					className="source-type-modal__list"
+					role="group"
+					aria-labelledby="source-type-dialog-label"
+				>
+					{sourceTypeItems.map((item, index) => (
+						<li
+							key={item.id}
+							className="source-type-modal__list-item"
+						>
+							<label>
+								<input
+									type="checkbox"
+									checked={selectedItems[item.name] || false}
+									onChange={handleOnChange}
+									name={item.name}
+									ref={index === 0 ? firstInputRef : null}
+								/>
+								{item.name}
+							</label>
+						</li>
+					))}
+				</ul>
+				<div className="source-type-modal__controls">
+					<button
+						value="cancel"
+						className="source-type-modal__control-btn source-type-modal__control-btn--cancel"
+						onClick={toggleModalOpenState}
+					>
+						Cancel
+					</button>
+					<button
+						value="apply"
+						className="source-type-modal__control-btn source-type-modal__control-btn--apply"
+						onClick={() => {
+							console.log("applying source types");
+							console.log(
+								JSON.stringify(
+									Object.keys(selectedItems).reduce(
+										(items, key) => {
+											if (selectedItems[key]) {
+												return [...items, key];
+											}
+											return items;
+										},
+										[]
+									)
+								)
+							);
+							toggleModalOpenState();
+						}}
+					>
+						Apply
+					</button>
+				</div>
+			</Modal>
 		</div>
 	);
 }
