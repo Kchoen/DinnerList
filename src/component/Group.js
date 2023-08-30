@@ -2,7 +2,6 @@ import { Button, Form, ListGroup, ListGroupItem } from "react-bootstrap";
 import Swal from "sweetalert2";
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import Modal from "react-modal";
-import { result } from "lodash";
 
 export default function RestaurantPicker() {
 	const [folders, setFolders] = useState([]);
