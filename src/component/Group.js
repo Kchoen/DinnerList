@@ -121,11 +121,13 @@ export default function RestaurantPicker() {
 
 	return (
 		<div className="container">
-			<Button onClick={addFolder}>Add Folder</Button>
+			<Button margin="12px" onClick={addFolder}>
+				Add Folder
+			</Button>
 
 			{folders.map((folder) => (
 				<div key={folder.name}>
-					<h2 onClick={() => toggleFolder(folder)}>
+					<h2 className="mt-2" onClick={() => toggleFolder(folder)}>
 						{folder.open ? "📁" : "📂"} {folder.name + " "}
 						<Button
 							style={{
