@@ -5,35 +5,35 @@ import Modal from "react-modal";
 import { result } from "lodash";
 
 export default function RestaurantPicker() {
-	const [folders, setFolders] = useState([
-		{
-			name: "速食",
-			restaurants: ["KFC", "McDonald's"],
-			open: true,
-		},
-	]);
-	const sourceTypeItems = [{ id: "速食", name: "速食" }];
-	const [selectedRestaurant, setSelectedRestaurant] = useState("");
-	var checkedFolders = [];
+	const [folders, setFolders] = useState([]);
 	Modal.setAppElement("#root");
-	const [modalIsOpen, setModalIsOpen] = useState(false);
-	const [selectedItems, setSelectedItems] = useState({});
-	const firstInputRef = useRef();
+	React.useEffect(() => {
+		loadFolders();
+	}, []);
 
-	const toggleModalOpenState = () => {
-		setModalIsOpen((state) => !state);
-	};
+	React.useEffect(() => {
+		saveFolders();
+	}, [folders]);
+	function loadFolders() {
+		const storedFolders = JSON.parse(localStorage.getItem("folders"));
+		if (storedFolders == null) return;
+		setFolders(storedFolders);
+	}
 
-	const handleOnChange = (e) => {
-		const { name, checked } = e.target;
+	function saveFolders() {
+		if (folders?.length)
+			localStorage.setItem("folders", JSON.stringify(folders));
+	}
 
-		setSelectedItems((items) => ({
-			...items,
-			[name]: checked,
-		}));
-	};
 	// Note
 	// Folder handlers
+	const toggleFolder = (folder) => {
+		setFolders((prev) =>
+			prev.map((f) =>
+				f.name === folder.name ? { ...f, open: !f.open } : f
+			)
+		);
+	};
 	const addFolder = () => {
 		Swal.fire({
 			title: "增加資料夾",
@@ -60,14 +60,6 @@ export default function RestaurantPicker() {
 					},
 				]);
 		});
-	};
-
-	const toggleFolder = (folder) => {
-		setFolders((prev) =>
-			prev.map((f) =>
-				f.name === folder.name ? { ...f, open: !f.open } : f
-			)
-		);
 	};
 
 	const renameFolder = (folder) => {
@@ -312,71 +304,6 @@ export default function RestaurantPicker() {
 					)}
 				</div>
 			))}
-			<Modal
-				isOpen={modalIsOpen}
-				onRequestClose={toggleModalOpenState}
-				className="source-type-modal"
-				aria-labelledby="source-type-dialog-label"
-				onAfterOpen={() => {
-					setTimeout(() => firstInputRef.current?.focus(), 0);
-				}}
-			>
-				<ul
-					className="source-type-modal__list"
-					role="group"
-					aria-labelledby="source-type-dialog-label"
-				>
-					{sourceTypeItems.map((item, index) => (
-						<li
-							key={item.id}
-							className="source-type-modal__list-item"
-						>
-							<label>
-								<input
-									type="checkbox"
-									checked={selectedItems[item.name] || false}
-									onChange={handleOnChange}
-									name={item.name}
-									ref={index === 0 ? firstInputRef : null}
-								/>
-								{item.name}
-							</label>
-						</li>
-					))}
-				</ul>
-				<div className="source-type-modal__controls">
-					<button
-						value="cancel"
-						className="source-type-modal__control-btn source-type-modal__control-btn--cancel"
-						onClick={toggleModalOpenState}
-					>
-						Cancel
-					</button>
-					<button
-						value="apply"
-						className="source-type-modal__control-btn source-type-modal__control-btn--apply"
-						onClick={() => {
-							console.log("applying source types");
-							console.log(
-								JSON.stringify(
-									Object.keys(selectedItems).reduce(
-										(items, key) => {
-											if (selectedItems[key]) {
-												return [...items, key];
-											}
-											return items;
-										},
-										[]
-									)
-								)
-							);
-							toggleModalOpenState();
-						}}
-					>
-						Apply
-					</button>
-				</div>
-			</Modal>
 		</div>
 	);
 }
