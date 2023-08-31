@@ -114,18 +114,44 @@ export default function RestaurantPicker() {
 		});
 	};
 	const handleDeleteRestaurant = (folder, restaurant) => {
-		setFolders((prev) =>
-			prev.map((f) =>
-				f.name === folder.name
-					? {
-							...f,
-							restaurants: f.restaurants.filter(
-								(r) => r !== restaurant
-							),
-					  }
-					: f
-			)
-		);
+		Swal.fire({
+			title: "更改餐廳資料",
+			input: "text",
+			inputLabel: "餐廳名稱",
+			inputValue: restaurant,
+			showCancelButton: true,
+			denyButtonText: `刪除`,
+			showDenyButton: true,
+		}).then((result) => {
+			let name = result.value;
+			if (result.isDenied) {
+				setFolders((prev) =>
+					prev.map((f) =>
+						f.name === folder.name
+							? {
+									...f,
+									restaurants: f.restaurants.filter(
+										(r) => r !== restaurant
+									),
+							  }
+							: f
+					)
+				);
+			} else if (name) {
+				setFolders((prev) =>
+					prev.map((f) =>
+						f.name === folder.name
+							? {
+									...f,
+									restaurants: f.restaurants.map((r) =>
+										r === restaurant ? name : r
+									),
+							  }
+							: f
+					)
+				);
+			}
+		});
 	};
 	const pickRestaurants = () => {
 		let boxHtml = "";
@@ -174,13 +200,39 @@ export default function RestaurantPicker() {
 			console.log(result);
 		});
 	};
+	const editSave = () => {
+		Swal.fire({
+			title: "更改存檔",
+			input: "text",
+			inputLabel: "餐廳名稱",
+			inputValue: JSON.stringify(folders),
+			showCancelButton: true,
+			confirmButtonText: `確定更改存檔`,
+			confirmButtonColor: "red",
+		}).then((result) => {
+			if (result.value) {
+				const storedFolders = JSON.parse(result.value);
+				setFolders(storedFolders);
+			}
+		});
+	};
 	// Restaurant handlers
 
 	//...other handlers
 
 	return (
 		<div className="container">
-			<h1>口袋餐廳名冊</h1>
+			<h1>
+				口袋餐廳名冊
+				<Button
+					margin="12px"
+					style={{ float: "right" }}
+					onClick={editSave}
+					variant="danger"
+				>
+					編輯存檔
+				</Button>
+			</h1>
 			<Button margin="12px" onClick={addFolder} variant="success">
 				新增資料夾
 			</Button>
@@ -298,7 +350,7 @@ export default function RestaurantPicker() {
 										}
 										variant="danger"
 									>
-										刪除
+										編輯
 									</Button>
 								</ListGroupItem>
 							))}
