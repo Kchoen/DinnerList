@@ -62,6 +62,7 @@ export default function RestaurantPicker() {
 	};
 
 	const renameFolder = (folder) => {
+		toggleFolder(folder);
 		Swal.fire({
 			title: "更改資料夾名稱",
 			input: "text",
@@ -88,6 +89,7 @@ export default function RestaurantPicker() {
 	};
 
 	const addRestaurant = (folder) => {
+		toggleFolder(folder);
 		Swal.fire({
 			title: "增加餐廳",
 			input: "text",
