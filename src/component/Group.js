@@ -56,6 +56,7 @@ export default function RestaurantPicker() {
 						name,
 						restaurants: [],
 						open: true,
+						checked: true,
 					},
 				]);
 		});
@@ -161,7 +162,9 @@ export default function RestaurantPicker() {
 		let boxHtml = "";
 		folders.forEach((folder) => {
 			boxHtml += `<div  class="form-check">
-            <input style="margin: 5px" class="form-check-input" type="checkbox" checked="true" value="" id=${folder.name}>
+            <input style="margin: 5px" class="form-check-input" type="checkbox" ${
+				folder.checked ? `checked` : ``
+			} value="" id=${folder.name}>
             <label style="margin: 5px"  class="form-check-label" for="checkbox1">
                 ${folder.name}
             </label>
@@ -180,6 +183,9 @@ export default function RestaurantPicker() {
 					console.log(document.getElementById(folder.name).checked);
 					if (document.getElementById(folder.name).checked) {
 						selected = selected.concat(folder.restaurants);
+						folder.checked = true;
+					} else {
+						folder.checked = false;
 					}
 				});
 				console.log(selected);
