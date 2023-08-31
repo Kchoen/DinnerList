@@ -70,7 +70,7 @@ export default function RestaurantPicker() {
 			showCancelButton: true,
 			denyButtonText: `刪除`,
 			showDenyButton: true,
-			onOpen: () => Swal.getConfirmButton().focus(),
+			didOpen: () => Swal.getConfirmButton().focus(),
 		}).then((result) => {
 			let name = result.value;
 			if (result.isDenied) {
@@ -123,7 +123,7 @@ export default function RestaurantPicker() {
 			showCancelButton: true,
 			denyButtonText: `刪除`,
 			showDenyButton: true,
-			onOpen: () => Swal.getConfirmButton().focus(),
+			didOpen: () => Swal.getConfirmButton().focus(),
 		}).then((result) => {
 			let name = result.value;
 			if (result.isDenied) {
