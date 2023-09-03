@@ -264,12 +264,13 @@ export default function RestaurantPicker() {
 			input: "text",
 			inputLabel: "資料代碼",
 			inputValue: "",
-			showCancelButton: true,
+			showCancelButton: false,
 			confirmButtonText: `確定匯入餐廳`,
 			confirmButtonColor: "red",
 			showDenyButton: true,
 			denyButtonColor: "green",
 			denyButtonText: "複製所有餐廳代碼",
+			didOpen: () => Swal.getConfirmButton().focus(),
 		}).then((result) => {
 			if (result.isDenied) {
 				getFolderCode(folders);
