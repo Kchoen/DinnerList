@@ -23,7 +23,79 @@ export default function RestaurantPicker() {
 		if (folders?.length)
 			localStorage.setItem("folders", JSON.stringify(folders));
 	}
-
+	function FolderEditor(params) {
+		switch (params.type) {
+			case "addFolder":
+				setFolders((prev) => [
+					...prev,
+					{
+						name: params.name,
+						restaurants: [],
+						open: true,
+						checked: true,
+					},
+				]);
+				break;
+			case "removeFolder":
+				setFolders((prev) =>
+					prev.filter((f) => f.name !== params.name)
+				);
+				break;
+			case "editFolderName":
+				setFolders((prev) =>
+					prev.map((f) =>
+						f.name === params.folder.name
+							? { ...f, name: params.name }
+							: f
+					)
+				);
+				break;
+			case "addRestaurant":
+				setFolders((prev) =>
+					prev.map((f) =>
+						f.name === params.folder.name
+							? {
+									...f,
+									restaurants: f.restaurants.concat(
+										params.name
+									),
+							  }
+							: f
+					)
+				);
+				break;
+			case "deleteRestaurant":
+				setFolders((prev) =>
+					prev.map((f) =>
+						f.name === params.folder.name
+							? {
+									...f,
+									restaurants: f.restaurants.filter(
+										(r) => r !== params.restaurant
+									),
+							  }
+							: f
+					)
+				);
+				break;
+			case "editRestaurant":
+				setFolders((prev) =>
+					prev.map((f) =>
+						f.name === params.folder.name
+							? {
+									...f,
+									restaurants: f.restaurants.map((r) =>
+										r === params.restaurant
+											? params.name
+											: r
+									),
+							  }
+							: f
+					)
+				);
+				break;
+		}
+	}
 	// Note
 	// Folder handlers
 	const toggleFolder = (folder) => {
@@ -49,16 +121,7 @@ export default function RestaurantPicker() {
 			},
 		}).then((result) => {
 			let name = result.value;
-			if (name)
-				setFolders((prev) => [
-					...prev,
-					{
-						name,
-						restaurants: [],
-						open: true,
-						checked: true,
-					},
-				]);
+			if (name) FolderEditor({ type: "addFolder", name });
 		});
 	};
 
@@ -73,18 +136,19 @@ export default function RestaurantPicker() {
 			denyButtonText: `刪除`,
 			showDenyButton: true,
 			didOpen: () => Swal.getConfirmButton().focus(),
+			inputValidator: (value) => {
+				if (!value) {
+					return "資料夾名稱不能是空白的";
+				} else if (folders.some((e) => e.name === value)) {
+					return "此資料夾已經存在了";
+				}
+			},
 		}).then((result) => {
 			let name = result.value;
 			if (result.isDenied) {
-				setFolders((prev) =>
-					prev.filter((f) => f.name !== folder.name)
-				);
+				FolderEditor({ type: "removeFolder", name: folder.name });
 			} else if (name) {
-				setFolders((prev) =>
-					prev.map((f) =>
-						f.name === folder.name ? { ...f, name } : f
-					)
-				);
+				FolderEditor({ type: "editFolderName", name, folder });
 			}
 		});
 	};
@@ -107,13 +171,7 @@ export default function RestaurantPicker() {
 		}).then((result) => {
 			let name = result.value;
 			if (name) {
-				setFolders((prev) =>
-					prev.map((f) =>
-						f.name === folder.name
-							? { ...f, restaurants: f.restaurants.concat(name) }
-							: f
-					)
-				);
+				FolderEditor({ type: "addRestaurant", folder, name });
 			}
 		});
 	};
@@ -127,34 +185,24 @@ export default function RestaurantPicker() {
 			denyButtonText: `刪除`,
 			showDenyButton: true,
 			didOpen: () => Swal.getConfirmButton().focus(),
+			inputValidator: (value) => {
+				if (!value) {
+					return "餐廳名稱不能是空白的";
+				} else if (folder.restaurants.indexOf(value) !== -1) {
+					return "此餐廳已經在這個資料夾裡了";
+				}
+			},
 		}).then((result) => {
 			let name = result.value;
 			if (result.isDenied) {
-				setFolders((prev) =>
-					prev.map((f) =>
-						f.name === folder.name
-							? {
-									...f,
-									restaurants: f.restaurants.filter(
-										(r) => r !== restaurant
-									),
-							  }
-							: f
-					)
-				);
+				FolderEditor({ type: "deleteRestaurant", folder, restaurant });
 			} else if (name) {
-				setFolders((prev) =>
-					prev.map((f) =>
-						f.name === folder.name
-							? {
-									...f,
-									restaurants: f.restaurants.map((r) =>
-										r === restaurant ? name : r
-									),
-							  }
-							: f
-					)
-				);
+				FolderEditor({
+					type: "editRestaurant",
+					folder,
+					name,
+					restaurant,
+				});
 			}
 		});
 	};
@@ -212,18 +260,68 @@ export default function RestaurantPicker() {
 	};
 	const editSave = () => {
 		Swal.fire({
-			title: "更改存檔",
+			title: "匯入餐廳",
 			input: "text",
-			inputLabel: "餐廳名稱",
-			inputValue: JSON.stringify(folders),
+			inputLabel: "資料代碼",
+			inputValue: "",
 			showCancelButton: true,
-			confirmButtonText: `確定更改存檔`,
+			confirmButtonText: `確定匯入餐廳`,
 			confirmButtonColor: "red",
+			showDenyButton: true,
+			denyButtonColor: "green",
+			denyButtonText: "複製所有餐廳代碼",
 		}).then((result) => {
+			if (result.isDenied) {
+				getFolderCode(folders);
+			}
 			if (result.value) {
 				const storedFolders = JSON.parse(result.value);
-				setFolders(storedFolders);
+				mergeSave(storedFolders);
 			}
+		});
+	};
+	const mergeSave = (mergeFolders) => {
+		mergeFolders.forEach((mergeFolder) => {
+			if (!folders.some((e) => e.name === mergeFolder.name)) {
+				setFolders((prev) => [
+					...prev,
+					{
+						name: mergeFolder.name,
+						restaurants: mergeFolder.restaurants,
+						open: true,
+						checked: true,
+					},
+				]);
+			} else {
+				setFolders((prev) =>
+					prev.map((f) => {
+						if (f.name === mergeFolder.name) {
+							let mergeArr = f.restaurants.concat(
+								mergeFolder.restaurants
+							);
+							f.restaurants = mergeArr.filter(
+								(item, index) => mergeArr.indexOf(item) == index
+							);
+						}
+						return f;
+					})
+				);
+			}
+		});
+	};
+	const getFolderCode = (folder) => {
+		let folderCode = JSON.stringify(folder);
+		console.log(folderCode);
+
+		// Copy the text inside the text field
+		navigator.clipboard.writeText(folderCode);
+
+		// Alert the copied text
+		Swal.fire({
+			icon: "success",
+			title: "已經成功複製分享代碼",
+			showConfirmButton: false,
+			timer: 1500,
 		});
 	};
 	// Restaurant handlers
@@ -240,7 +338,7 @@ export default function RestaurantPicker() {
 					onClick={editSave}
 					variant="danger"
 				>
-					編輯存檔
+					匯入餐廳
 				</Button>
 			</h1>
 			<Button margin="12px" onClick={addFolder} variant="success">
@@ -258,6 +356,17 @@ export default function RestaurantPicker() {
 				<div key={folder.name}>
 					<h2 className="mt-2" onClick={() => toggleFolder(folder)}>
 						{folder.open ? "📁" : "📂"} {folder.name + " "}
+						<Button
+							style={{
+								textAlign: "center",
+								float: "right",
+								height: "30px",
+								fontSize: "10px",
+							}}
+							onClick={() => getFolderCode([folder])}
+						>
+							分享資料夾
+						</Button>
 						<Button
 							style={{
 								textAlign: "center",
