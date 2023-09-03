@@ -364,7 +364,10 @@ export default function RestaurantPicker() {
 								height: "30px",
 								fontSize: "10px",
 							}}
-							onClick={() => getFolderCode([folder])}
+							onClick={() => {
+								toggleFolder(folder);
+								getFolderCode([folder]);
+							}}
 						>
 							分享資料夾
 						</Button>
